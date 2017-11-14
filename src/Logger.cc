@@ -22,6 +22,7 @@
 #include <stdexcept>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 
 #include "Cycles.h"
 #include "LogCabinLogger.h"
@@ -150,6 +151,9 @@ void
 Logger::setLogFile(const char* path, bool truncate)
 {
     Lock lock(mutex);
+    boost::filesystem::path dir = boost::filesystem::path(path).parent_path();
+    if(!boost::filesystem::exists(dir))
+	boost::filesystem::create_directories(dir);
     int newFd = open(path, O_CREAT | O_WRONLY | (truncate ? O_TRUNC : 0),
             0666);
     if (newFd < 0) {
